@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  app:
+    restart: always
+    build:
+      context: "."
+      dockerfile: "./Dockerfile"
+    entrypoint: ./docker-entrypoint.sh
+    command: flask run
+    depends_on:
+      - database
+    volumes:
+      - ./:/server
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_APP: /server/server.py
+      FLASK_RUN_HOST: 0.0.0.0
+      FLASK_ENV:  development
+      SQLALCHEMY_DATABASE_URI: 'postgresql://testuser:testpw@database/app'
+      SQLALCHEMY_TEST_DATABASE_URI: 'postgresql://testuser:testpw@database/apptest'
+
+  database:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: testuser
+      POSTGRES_PASSWORD: testpw
+    ports:
+      - "5432:5432"
+    volumes:
+      # Persist the data by storing it on the host computer (Host Volumes).
+      # To delete this data and start a fresh new database,
+      # you will have to manually remove the data files from the host computer
+      # with `rm -rf ./database`
+      - ./database:/var/lib/postgresql/data
