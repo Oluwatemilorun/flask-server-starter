@@ -1,5 +1,6 @@
 PG_URI = postgresql://testuser:testpw@database
-SERVER = @docker-compose run --rm app
+SERVER = @docker-compose exec app
+DB = @docker-compose exec database
 
 start:
 	docker-compose up -d --build
@@ -9,18 +10,18 @@ build:
 
 init-db:
 	docker-compose stop app
-	docker-compose exec database bash -c "echo 'create database app' | psql $(PG_URI)"
+	$(DB) bash -c "echo 'create database app' | psql $(PG_URI)"
 	docker-compose start app
-	docker-compose exec app bash -c "source venv/bin/activate && flask db migrate -m 'Initial migration.' && flask db upgrade"
+	$(SERVER) bash -c "source venv/bin/activate && flask db migrate -m 'Initial migration.' && flask db upgrade"
 
 recreate-db:
 	docker-compose stop app
-	docker-compose exec database bash -c "echo 'drop database app' | psql $(PG_URI) && echo 'create database app' | psql $(PG_URI)"
+	$(DB) bash -c "echo 'drop database app' | psql $(PG_URI) && echo 'create database app' | psql $(PG_URI)"
 	docker-compose start app
-	docker-compose exec app bash -c "source venv/bin/activate && flask db upgrade"
+	$(SERVER) bash -c "source venv/bin/activate && flask db upgrade"
 
 start-psql:
-	docker-compose exec database psql $(PG_URI)/app
+	$(DB) psql $(PG_URI)/app
 
 start-bash:
 	$(SERVER) bash
