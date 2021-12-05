@@ -28,6 +28,9 @@ $ make start
 $ make init-db
 
 ```
+- Server: `http://localhost:5000`
+- Database: `http://localhost:5432`
+- Database Admin ([pgadmin4](https://www.pgadmin.org/docs/pgadmin4/latest/getting_started.html)): `http://localhost:5050`
 
 ### Available Scripts
 - `make build`: Rebuild images / reinstall dependencies

@@ -34,3 +34,16 @@ services:
       # you will have to manually remove the data files from the host computer
       # with `rm -rf ./database`
       - ./database:/var/lib/postgresql/data
+
+  database-admin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    volumes:
+      - ./database-servers.json:/pgadmin4/servers.json # preconfigured servers and/or connections
+      - ./pgpass:/pgpass # passwords for the connections in database-servers.json with format -> hostname:port:database:username:password
